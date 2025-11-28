@@ -150,6 +150,19 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	- $(CONTAINER_TOOL) buildx rm aruba-builder
 	rm Dockerfile.cross
 
+HELMIFY ?= $(LOCALBIN)/helmify
+
+.PHONY: helmify
+helmify: $(HELMIFY) ## Download helmify locally if necessary.
+$(HELMIFY): $(LOCALBIN)
+	test -s $(LOCALBIN)/helmify || GOBIN=$(LOCALBIN) go install github.com/arttor/helmify/cmd/helmify@latest
+    
+helm-operator: manifests kustomize helmify
+	$(KUSTOMIZE) build config/default | $(HELMIFY) config/charts/operator
+
+helm-crd: manifests kustomize helmify
+	$(KUSTOMIZE) build config/crd | $(HELMIFY) config/charts/crd
+
 .PHONY: _ensure_dynamic_env
 _ensure_dynamic_env:
 	@mkdir -p "$(MANAGER_DIR)"
