@@ -1,6 +1,8 @@
 # golangci-lint configuration for Arubacloud Resource Operator
 # See https://golangci-lint.run/usage/configuration/ for full documentation
 
+version: 2
+
 run:
   timeout: 5m
   tests: true
@@ -41,9 +43,7 @@ linters:
 
 linters-settings:
   errcheck:
-    # Report about not checking of errors in type assertions: `a := b.(MyStruct)`;
     check-type-assertions: false
-    # Report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
     check-blank: false
 
   govet:
@@ -57,7 +57,6 @@ linters-settings:
           - (github.com/go-logr/logr.Logger).Errorf
 
   gocyclo:
-    # Minimal code complexity to report
     min-complexity: 15
 
   revive:
@@ -92,7 +91,7 @@ linters-settings:
 
   gosec:
     excludes:
-      - G404 # Use of weak random number generator (math/rand instead of crypto/rand)
+      - G404
     config:
       global:
         nosec: false
@@ -102,8 +101,8 @@ linters-settings:
   stylecheck:
     checks:
       - 'all'
-      - '-ST1000' # Disable package comment requirement for now
-      - '-ST1003' # Disable ALL_CAPS in Go names
+      - '-ST1000'
+      - '-ST1003'
 
   misspell:
     locale: US
@@ -115,25 +114,9 @@ linters-settings:
     require-specific: true
 
 issues:
-  # Maximum issues count per one linter
   max-issues-per-linter: 0
-  # Maximum count of issues with the same text
   max-same-issues: 0
-
-  # Exclude directories (replaces deprecated run.skip-dirs)
-  exclude-dirs:
-    - bin
-    - dist
-    - hack
-
-  # Exclude files (replaces deprecated run.skip-files)
-  exclude-files:
-    - ".*\\.pb\\.go$"
-    - "zz_generated\\..*\\.go$"
-
-  # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
-    # Exclude some linters from running on tests files
     - path: _test\.go
       linters:
         - gocyclo
@@ -141,47 +124,27 @@ issues:
         - gosec
         - unused
         - unparam
-
-    # Exclude some staticcheck messages
     - linters:
         - staticcheck
-      text: 'SA1019:' # Deprecation warnings
-
-    # Allow main.go to have higher complexity due to setup code
+      text: 'SA1019:'
     - path: cmd/main\.go
       linters:
         - gocyclo
         - funlen
-
-    # Generated files
     - path: zz_generated\..*\.go
       linters:
         - all
-
-    # Mock files
     - path: internal/mocks/
       linters:
         - all
-
-  # Show only new issues created after git revision
   new: false
-
-  # Fix found issues (if it's supported by the linter)
   fix: false
 
 output:
-  # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
   formats:
     - format: colored-line-number
-
-  # Print lines of code with issue
+      path: stdout
   print-issued-lines: true
-
-  # Print linter name in the end of issue text
   print-linter-name: true
-
-  # Make issues output unique by line
   uniq-by-line: true
-
-  # Sort results by: filepath, line and column
   sort-results: true
