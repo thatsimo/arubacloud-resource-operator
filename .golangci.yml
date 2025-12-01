@@ -111,6 +111,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - zz_generated$
 issues:
   max-same-issues: 0
   new: false
@@ -127,3 +128,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - zz_generated$
