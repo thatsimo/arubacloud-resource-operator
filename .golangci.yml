@@ -4,47 +4,40 @@
 run:
   timeout: 5m
   tests: true
-  skip-dirs:
-    - bin
-    - dist
-    - hack
-  skip-files:
-    - ".*\\.pb\\.go$"
-    - "zz_generated\\..*\\.go$"
 
 linters:
   enable:
     # Default linters
-    - errcheck      # Check for unchecked errors
-    - gosimple      # Simplify code
-    - govet         # Vet examines Go source code
-    - ineffassign   # Detects ineffectual assignments
-    - staticcheck   # Static analysis
-    - unused        # Checks for unused code
-    
+    - errcheck # Check for unchecked errors
+    - gosimple # Simplify code
+    - govet # Vet examines Go source code
+    - ineffassign # Detects ineffectual assignments
+    - staticcheck # Static analysis
+    - unused # Checks for unused code
+
     # Additional recommended linters
-    - gofmt         # Checks whether code was gofmt-ed
-    - goimports     # Check import statements are formatted
-    - revive        # Fast, configurable, extensible, flexible linter
-    - misspell      # Finds commonly misspelled English words
-    - unconvert     # Remove unnecessary type conversions
-    - unparam       # Reports unused function parameters
-    - whitespace    # Detects leading and trailing whitespace
-    
+    - gofmt # Checks whether code was gofmt-ed
+    - goimports # Check import statements are formatted
+    - revive # Fast, configurable, extensible, flexible linter
+    - misspell # Finds commonly misspelled English words
+    - unconvert # Remove unnecessary type conversions
+    - unparam # Reports unused function parameters
+    - whitespace # Detects leading and trailing whitespace
+
     # Security linters
-    - gosec         # Security problems
-    
+    - gosec # Security problems
+
     # Style linters
-    - stylecheck    # Replacement for golint
-    
+    - stylecheck # Replacement for golint
+
     # Best practices
-    - errname       # Checks that error names follow conventions
-    - errorlint     # Find code that will cause problems with Go 1.13 error wrapping
-    - gocyclo       # Computes cyclomatic complexity
-    - nilerr        # Finds code returning nil even if it checks that error is not nil
-    
+    - errname # Checks that error names follow conventions
+    - errorlint # Find code that will cause problems with Go 1.13 error wrapping
+    - gocyclo # Computes cyclomatic complexity
+    - nilerr # Finds code returning nil even if it checks that error is not nil
+
   disable:
-    - typecheck     # Can conflict with generated code
+    - typecheck # Can conflict with generated code
 
 linters-settings:
   errcheck:
@@ -52,7 +45,7 @@ linters-settings:
     check-type-assertions: false
     # Report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
     check-blank: false
-  
+
   govet:
     enable:
       - shadow
@@ -62,11 +55,11 @@ linters-settings:
           - (github.com/go-logr/logr.Logger).Infof
           - (github.com/go-logr/logr.Logger).Warnf
           - (github.com/go-logr/logr.Logger).Errorf
-  
+
   gocyclo:
     # Minimal code complexity to report
     min-complexity: 15
-  
+
   revive:
     rules:
       - name: blank-imports
@@ -78,8 +71,8 @@ linters-settings:
       - name: error-naming
       - name: exported
         arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
+          - 'checkPrivateReceivers'
+          - 'sayRepetitiveInsteadOfStutters'
       - name: if-return
       - name: increment-decrement
       - name: var-naming
@@ -96,25 +89,25 @@ linters-settings:
       - name: unused-parameter
       - name: unreachable-code
       - name: redefines-builtin-id
-  
+
   gosec:
     excludes:
-      - G404  # Use of weak random number generator (math/rand instead of crypto/rand)
+      - G404 # Use of weak random number generator (math/rand instead of crypto/rand)
     config:
       global:
         nosec: false
         show-ignored: false
         audit: false
-  
+
   stylecheck:
-    checks: 
-      - "all"
-      - "-ST1000"  # Disable package comment requirement for now
-      - "-ST1003"  # Disable ALL_CAPS in Go names
-  
+    checks:
+      - 'all'
+      - '-ST1000' # Disable package comment requirement for now
+      - '-ST1003' # Disable ALL_CAPS in Go names
+
   misspell:
     locale: US
-  
+
   nolintlint:
     allow-unused: false
     allow-leading-space: false
@@ -126,7 +119,18 @@ issues:
   max-issues-per-linter: 0
   # Maximum count of issues with the same text
   max-same-issues: 0
-  
+
+  # Exclude directories (replaces deprecated run.skip-dirs)
+  exclude-dirs:
+    - bin
+    - dist
+    - hack
+
+  # Exclude files (replaces deprecated run.skip-files)
+  exclude-files:
+    - ".*\\.pb\\.go$"
+    - "zz_generated\\..*\\.go$"
+
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     # Exclude some linters from running on tests files
@@ -137,31 +141,31 @@ issues:
         - gosec
         - unused
         - unparam
-    
+
     # Exclude some staticcheck messages
     - linters:
         - staticcheck
-      text: "SA1019:"  # Deprecation warnings
-    
+      text: 'SA1019:' # Deprecation warnings
+
     # Allow main.go to have higher complexity due to setup code
     - path: cmd/main\.go
       linters:
         - gocyclo
         - funlen
-    
+
     # Generated files
     - path: zz_generated\..*\.go
       linters:
         - all
-    
+
     # Mock files
     - path: internal/mocks/
       linters:
         - all
-  
+
   # Show only new issues created after git revision
   new: false
-  
+
   # Fix found issues (if it's supported by the linter)
   fix: false
 
@@ -169,15 +173,15 @@ output:
   # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
   formats:
     - format: colored-line-number
-  
+
   # Print lines of code with issue
   print-issued-lines: true
-  
+
   # Print linter name in the end of issue text
   print-linter-name: true
-  
+
   # Make issues output unique by line
   uniq-by-line: true
-  
+
   # Sort results by: filepath, line and column
   sort-results: true
