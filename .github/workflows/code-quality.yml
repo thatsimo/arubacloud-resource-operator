@@ -1,136 +1,136 @@
 name: Code Quality
 
 on:
-    push:
-        branches: [main, develop]
-    pull_request:
-        branches: [main, develop]
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
 
 jobs:
-    lint:
-        name: Lint
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v5
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-            - name: Set up Go
-              uses: actions/setup-go@v6
-              with:
-                  go-version: "1.24"
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/.cache/go-build
-                      ~/go/pkg/mod
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
-            - name: Download dependencies
-              run: go mod download
+      - name: Download dependencies
+        run: go mod download
 
-            - name: Run golangci-lint
-              uses: golangci/golangci-lint-action@v9
-              with:
-                  version: v2.6
-                  args: --timeout=5m --config=.golangci.yml
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout=5m
 
-    test:
-        name: Test
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v5
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-            - name: Set up Go
-              uses: actions/setup-go@v6
-              with:
-                  go-version: "1.24"
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/.cache/go-build
-                      ~/go/pkg/mod
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
-            - name: Download dependencies
-              run: go mod download
+      - name: Download dependencies
+        run: go mod download
 
-            - name: Generate code and manifests
-              run: make generate manifests
+      - name: Generate code and manifests
+        run: make generate manifests
 
-            - name: Run tests
-              run: make test
+      - name: Run tests
+        run: make test
 
-            - name: Upload coverage to Codecov
-              uses: codecov/codecov-action@v4
-              with:
-                  file: ./cover.out
-                  flags: unittests
-                  name: codecov-umbrella
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./cover.out
+          flags: unittests
+          name: codecov-umbrella
 
-    verify:
-        name: Verify
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v5
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-            - name: Set up Go
-              uses: actions/setup-go@v6
-              with:
-                  go-version: "1.24"
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
 
-            - name: Cache Go modules
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/.cache/go-build
-                      ~/go/pkg/mod
-                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-                  restore-keys: |
-                      ${{ runner.os }}-go-
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
-            - name: Download dependencies
-              run: go mod download
+      - name: Download dependencies
+        run: go mod download
 
-            - name: Verify code formatting
-              run: |
-                  make fmt
-                  git diff --exit-code
+      - name: Verify code formatting
+        run: |
+          make fmt
+          git diff --exit-code
 
-            - name: Verify generated files
-              run: |
-                  make generate manifests
-                  git diff --exit-code
+      - name: Verify generated files
+        run: |
+          make generate manifests
+          git diff --exit-code
 
-            - name: Go mod tidy
-              run: |
-                  go mod tidy
-                  git diff --exit-code
+      - name: Go mod tidy
+        run: |
+          go mod tidy
+          git diff --exit-code
 
-    security:
-        name: Security Scan
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v5
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
 
-            - name: Set up Go
-              uses: actions/setup-go@v6
-              with:
-                  go-version: "1.24"
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24"
 
-            - name: Install Gosec
-              run: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
+      - name: Install Gosec
+        run: go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
 
-            - name: Run Gosec Security Scanner
-              run: gosec -no-fail -fmt sarif -out gosec.sarif ./...
+      - name: Run Gosec Security Scanner
+        run: gosec -no-fail -fmt sarif -out gosec.sarif ./...
 
-            - name: Upload SARIF file
-              uses: github/codeql-action/upload-sarif@v3
-              with:
-                  sarif_file: gosec.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gosec.sarif
