@@ -85,6 +85,9 @@ jobs:
           go-version-file: 'go.mod'
           cache: true
 
+      - name: Install mockery
+        run: go install github.com/vektra/mockery/v2@latest
+
       - name: Build manager binary
         run: make build
 
