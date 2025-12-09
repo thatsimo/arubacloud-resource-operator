@@ -61,9 +61,9 @@ manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and Cust
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
-generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
+generate: controller-gen mockery ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./..."
-	mockery
+	$(MOCKERY)
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
@@ -150,6 +150,19 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	- $(CONTAINER_TOOL) buildx rm aruba-builder
 	rm Dockerfile.cross
 
+HELMIFY ?= $(LOCALBIN)/helmify
+
+.PHONY: helmify
+helmify: $(HELMIFY) ## Download helmify locally if necessary.
+$(HELMIFY): $(LOCALBIN)
+	test -s $(LOCALBIN)/helmify || GOBIN=$(LOCALBIN) go install github.com/arttor/helmify/cmd/helmify@latest
+    
+helm-operator: manifests kustomize helmify
+	$(KUSTOMIZE) build config/default | $(HELMIFY) config/charts/arubacloud-resource-operator
+
+helm-crd: manifests kustomize helmify
+	$(KUSTOMIZE) build config/crd | $(HELMIFY) config/charts/arubacloud-resource-operator-crd
+
 .PHONY: _ensure_dynamic_env
 _ensure_dynamic_env:
 	@mkdir -p "$(MANAGER_DIR)"
@@ -209,6 +222,7 @@ KUSTOMIZE ?= $(LOCALBIN)/kustomize
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
+MOCKERY ?= $(LOCALBIN)/mockery
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v5.6.0
@@ -217,7 +231,8 @@ CONTROLLER_TOOLS_VERSION ?= v0.18.0
 ENVTEST_VERSION ?= $(shell go list -m -f "{{ .Version }}" sigs.k8s.io/controller-runtime | awk -F'[v.]' '{printf "release-%d.%d", $$2, $$3}')
 #ENVTEST_K8S_VERSION is the version of Kubernetes to use for setting up ENVTEST binaries (i.e. 1.31)
 ENVTEST_K8S_VERSION ?= $(shell go list -m -f "{{ .Version }}" k8s.io/api | awk -F'[v.]' '{printf "1.%d", $$3}')
-GOLANGCI_LINT_VERSION ?= v2.1.0
+GOLANGCI_LINT_VERSION ?= v1.61.0
+MOCKERY_VERSION ?= v2.53.5
 
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
@@ -245,7 +260,12 @@ $(ENVTEST): $(LOCALBIN)
 .PHONY: golangci-lint
 golangci-lint: $(GOLANGCI_LINT) ## Download golangci-lint locally if necessary.
 $(GOLANGCI_LINT): $(LOCALBIN)
-	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/v2/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION))
+	$(call go-install-tool,$(GOLANGCI_LINT),github.com/golangci/golangci-lint/cmd/golangci-lint,$(GOLANGCI_LINT_VERSION))
+
+.PHONY: mockery
+mockery: $(MOCKERY) ## Download mockery locally if necessary.
+$(MOCKERY): $(LOCALBIN)
+	$(call go-install-tool,$(MOCKERY),github.com/vektra/mockery/v2,$(MOCKERY_VERSION))
 
 # go-install-tool will 'go install' any package with custom target and name of binary, if it doesn't exist
 # $1 - target path with name of binary
@@ -291,3 +311,48 @@ debug-project: ## Debug specific ArubaProject
 	kubectl describe arubaproject $$name; \
 	echo "--- Project YAML ---"; \
 	kubectl get arubaproject $$name -o yaml
+
+##@ Helm Charts Release
+
+HELM_CHARTS_REPO ?= https://github.com/Arubacloud/helm-charts.git
+HELM_CHARTS_DIR ?= /tmp/helm-charts
+CHART_VERSION ?= $(shell echo $(IMG) | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' || echo "0.1.0")
+
+.PHONY: push-charts
+push-charts: helm-operator helm-crd ## Generate and push Helm charts to helm-charts repository
+	@echo "📦 Preparing to push Helm charts to $(HELM_CHARTS_REPO)..."
+	@echo "Chart version: $(CHART_VERSION)"
+	
+	# Clean and clone helm-charts repository
+	rm -rf $(HELM_CHARTS_DIR)
+	git clone $(HELM_CHARTS_REPO) $(HELM_CHARTS_DIR)
+	
+	# Update chart versions
+	@echo "Updating Chart.yaml versions..."
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		sed -i '' 's/^version: .*/version: $(CHART_VERSION)/' config/charts/arubacloud-resource-operator/Chart.yaml; \
+		sed -i '' 's/^appVersion: .*/appVersion: "$(CHART_VERSION)"/' config/charts/arubacloud-resource-operator/Chart.yaml; \
+		sed -i '' 's/^version: .*/version: $(CHART_VERSION)/' config/charts/arubacloud-resource-operator-crd/Chart.yaml; \
+		sed -i '' 's/^appVersion: .*/appVersion: "$(CHART_VERSION)"/' config/charts/arubacloud-resource-operator-crd/Chart.yaml; \
+	else \
+		sed -i 's/^version: .*/version: $(CHART_VERSION)/' config/charts/arubacloud-resource-operator/Chart.yaml; \
+		sed -i 's/^appVersion: .*/appVersion: "$(CHART_VERSION)"/' config/charts/arubacloud-resource-operator/Chart.yaml; \
+		sed -i 's/^version: .*/version: $(CHART_VERSION)/' config/charts/arubacloud-resource-operator-crd/Chart.yaml; \
+		sed -i 's/^appVersion: .*/appVersion: "$(CHART_VERSION)"/' config/charts/arubacloud-resource-operator-crd/Chart.yaml; \
+	fi
+	
+	# Copy charts to helm-charts repo
+	@echo "Copying charts..."
+	mkdir -p $(HELM_CHARTS_DIR)/charts/arubacloud-resource-operator
+	mkdir -p $(HELM_CHARTS_DIR)/charts/arubacloud-resource-operator-crd
+	cp -R config/charts/arubacloud-resource-operator/* $(HELM_CHARTS_DIR)/charts/arubacloud-resource-operator/
+	cp -R config/charts/arubacloud-resource-operator-crd/* $(HELM_CHARTS_DIR)/charts/arubacloud-resource-operator-crd/
+	
+	# Create branch, commit and push
+	cd $(HELM_CHARTS_DIR) && \
+		git checkout -b update-arubacloud-resource-operator-$$(date +%s) && \
+		git add . && \
+		git commit -m "Update chart arubacloud-resource-operator $(CHART_VERSION)" && \
+		git push origin HEAD
+	
+	@echo "✅ Charts pushed successfully!"
