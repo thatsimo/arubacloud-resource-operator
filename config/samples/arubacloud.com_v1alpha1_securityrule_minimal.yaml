@@ -1,0 +1,22 @@
+apiVersion: arubacloud.com/v1alpha1
+kind: SecurityRule
+metadata:
+  name: __NAME__
+  namespace: __NAMESPACE__
+spec:
+  tags:
+    - e2e-test
+  location:
+    value: ITBG-Bergamo
+  direction: ingress
+  etherType: IPv4
+  portRangeMin: 22
+  portRangeMax: 22
+  protocol: tcp
+  remoteIpPrefix: '0.0.0.0/0'
+  securityGroupReference:
+    name: __SG_NAME__
+    namespace: __SG_NAMESPACE__
+  projectReference:
+    name: __PROJECT_NAME__
+    namespace: __PROJECT_NAMESPACE__

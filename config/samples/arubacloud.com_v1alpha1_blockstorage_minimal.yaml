@@ -1,19 +1,19 @@
 apiVersion: arubacloud.com/v1alpha1
 kind: BlockStorage
 metadata:
-  name: __NAME__01
+  name: __NAME__
   namespace: __NAMESPACE__
 spec:
-  tenant: __TENANT__
   tags:
-    - tag-1
+    - e2e-test
+    - boot-disk
   location:
     value: ITBG-Bergamo
-  sizeGb: 40
-  billingPeriod: Hour
   dataCenter: ITBG-1
+  sizeGb: 10
+  billingPeriod: Hour
   bootable: true
-  image: LU20-001
+  image: ubuntu-24.04
   projectReference:
-    name: __NAME__
-    namespace: __NAMESPACE__
+    name: __PROJECT_NAME__
+    namespace: __PROJECT_NAMESPACE__

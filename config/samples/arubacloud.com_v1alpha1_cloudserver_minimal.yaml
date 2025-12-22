@@ -1,26 +1,22 @@
 apiVersion: arubacloud.com/v1alpha1
 kind: CloudServer
 metadata:
-  name: __NAME__05
+  name: __NAME__
   namespace: __NAMESPACE__
 spec:
-  tenant: __TENANT__
   tags:
-    - sample-tag
+    - e2e-test
   location:
     value: ITBG-Bergamo
   dataCenter: ITBG-1
   vpcReference:
     name: __NAME__
     namespace: __NAMESPACE__
-  vpcPreset: False
+  vpcPreset: false
   flavorName: CSO4A8
   subnetReferences:
     - name: __NAME__
       namespace: __NAMESPACE__
-  elasticIpReference:
-    name: __NAME__05
-    namespace: __NAMESPACE__
   securityGroupReferences:
     - name: __NAME__
       namespace: __NAMESPACE__
@@ -28,7 +24,7 @@ spec:
     name: __NAME__
     namespace: __NAMESPACE__
   bootVolumeReference:
-    name: __NAME__05
+    name: __NAME__
     namespace: __NAMESPACE__
   projectReference:
     name: __NAME__

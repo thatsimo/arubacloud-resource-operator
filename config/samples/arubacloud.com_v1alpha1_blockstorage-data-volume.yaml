@@ -2,7 +2,7 @@ apiVersion: arubacloud.com/v1alpha1
 kind: BlockStorage
 metadata:
   name: __NAME__-data
-  namespace: default
+  namespace: __NAMESPACE__
 spec:
   tenant: __TENANT__
   tags:
@@ -15,4 +15,4 @@ spec:
   bootable: false
   projectReference:
     name: __NAME__
-    namespace: default
+    namespace: __NAMESPACE__
