@@ -4,7 +4,6 @@ metadata:
   name: __NAME__
   namespace: __NAMESPACE__
 spec:
-  tenant: __TENANT__
   tags:
     - sample-tag
   location:
@@ -30,9 +29,9 @@ spec:
   bootVolumeReference:
     name: __NAME__
     namespace: __NAMESPACE__
-  dataVolumeReferences:
-    - name: __NAME__-data
-      namespace: __NAMESPACE__
   projectReference:
     name: __NAME__
     namespace: __NAMESPACE__
+  dataVolumeReferences:
+    - name: __DATA_VOLUME_NAME__
+      namespace: __DATA_VOLUME_NAMESPACE__
