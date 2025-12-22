@@ -9,11 +9,11 @@ spec:
     - boot-disk
   location:
     value: ITBG-Bergamo
-  dataCenter: ITBG-1
-  sizeGb: 10
+  sizeGb: 40
   billingPeriod: Hour
+  dataCenter: ITBG-1
   bootable: true
-  image: ubuntu-24.04
+  image: LU20-001
   projectReference:
     name: __PROJECT_NAME__
     namespace: __PROJECT_NAMESPACE__

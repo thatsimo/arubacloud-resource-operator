@@ -83,9 +83,11 @@ var _ = Describe("05-StorageMulti", Ordered, func() {
 			}, testTimeout, 5*time.Second).Should(Succeed())
 
 			By("applying the boot BlockStorage manifest")
-			bsBootManifest, err := utils.LoadSampleManifest("arubacloud.com_v1alpha1_blockstorage.yaml", map[string]string{
-				"__NAME__":      blockStorageBootName,
-				"__NAMESPACE__": namespace,
+			bsBootManifest, err := utils.LoadSampleManifest("arubacloud.com_v1alpha1_blockstorage_bootable.yaml", map[string]string{
+				"__NAME__":              blockStorageBootName,
+				"__NAMESPACE__":         namespace,
+				"__PROJECT_NAME__":      projectName,
+				"__PROJECT_NAMESPACE__": namespace,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -96,9 +98,10 @@ var _ = Describe("05-StorageMulti", Ordered, func() {
 
 			By("applying the data BlockStorage manifest")
 			bsDataManifest, err := utils.LoadSampleManifest("arubacloud.com_v1alpha1_blockstorage-data-volume.yaml", map[string]string{
-				"__NAME__-data": blockStorageDataName,
-				"__NAME__":      projectName,
-				"__NAMESPACE__": namespace,
+				"__NAME__":              blockStorageDataName,
+				"__NAMESPACE__":         namespace,
+				"__PROJECT_NAME__":      projectName,
+				"__PROJECT_NAMESPACE__": namespace,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
