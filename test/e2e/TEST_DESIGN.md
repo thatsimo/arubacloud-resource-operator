@@ -14,8 +14,8 @@ Documentare la suite di test end-to-end (e2e) implementata che copre tutti i rec
 
 ### Statistiche Codebase
 
-- **11 file di test** totali
-- **10 test suite** (escluso il test manager di base)
+- **10 file di test** totali
+- **8 test suite** (escluso il test manager di base)
 - **100% copertura** di tutti i 9 reconciler
 
 ### Risultati Test Eseguiti
