@@ -20,16 +20,16 @@ Documentare la suite di test end-to-end (e2e) implementata che copre tutti i rec
 
 ### Risultati Test Eseguiti
 
-| Test ID | Nome Test                 | Esito   | Durata  | Specs Passed | Specs Failed | Specs Skipped |
-| ------- | ------------------------- | ------- | ------- | ------------ | ------------ | ------------- |
-| 01      | 01-ProjectOnly            | ✅ PASS | 73.82s  | 2            | 0            | 50            |
-| 02      | 02-NetworkBasic           | ✅ PASS | 279.37s | 1            | 0            | 51            |
-| 03      | 03-NetworkWithSecurity    | ✅ PASS | 333.45s | 1            | 0            | 51            |
-| 04      | 04-StorageBasic           | ✅ PASS | 195.65s | 1            | 0            | 51            |
-| 05      | 05-StorageMulti           | ✅ PASS | 200.08s | 1            | 0            | 10            |
-| 06      | 06-NetworkComplete        | ✅ PASS | 364.81s | 1            | 0            | 51            |
-| 07      | 07-Compute                | ✅ PASS | 464.69s | 1            | 0            | 10            |
-| 08      | 08-ComputeWithDataVolumes | ❌ FAIL | N/A     | 0            | 1            | 10            |
+| Test ID | Nome Test                 | Esito   | Durata  |
+| ------- | ------------------------- | ------- | ------- |
+| 01      | 01-ProjectOnly            | ✅ PASS | 73.82s  |
+| 02      | 02-NetworkBasic           | ✅ PASS | 279.37s |
+| 03      | 03-NetworkWithSecurity    | ✅ PASS | 333.45s |
+| 04      | 04-StorageBasic           | ✅ PASS | 195.65s |
+| 05      | 05-StorageMulti           | ✅ PASS | 200.08s |
+| 06      | 06-NetworkComplete        | ✅ PASS | 364.81s |
+| 07      | 07-Compute                | ✅ PASS | 464.69s |
+| 08      | 08-ComputeWithDataVolumes | ❌ FAIL | N/A     |
 
 **Note**:
 
