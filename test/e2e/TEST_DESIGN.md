@@ -2,7 +2,7 @@
 
 ## Aruba Cloud Resource Operator - Test Coverage Strategy
 
-### Data: 22 Dicembre 2025
+### Data: 23 Dicembre 2025
 
 ## Obiettivo
 
@@ -29,13 +29,12 @@ Documentare la suite di test end-to-end (e2e) implementata che copre tutti i rec
 | 05      | 05-StorageMulti           | ✅ PASS | 200.08s |
 | 06      | 06-NetworkComplete        | ✅ PASS | 364.81s |
 | 07      | 07-Compute                | ✅ PASS | 464.69s |
-| 08      | 08-ComputeWithDataVolumes | ❌ FAIL | N/A     |
+| 08      | 08-ComputeWithDataVolumes | ✅ PASS | 369.94s |
 
 **Note**:
 
 - I test sono stati eseguiti individualmente con focus specifico tramite `make test-e2e FOCUS="<test-id>"`.
 - La durata include setup del cluster Kind, deploy del controller manager e cleanup finale.
-- **Test 08**: Il test non è passato perché l'API per la gestione dei data volumes descritta nella [documentazione Aruba Cloud](https://api.arubacloud.com/it/docs/documents/compute/manage-data-volumes/) non sembra funzionare correttamente.
 
 ## Analisi delle Risorse
 
